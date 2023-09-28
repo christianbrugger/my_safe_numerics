@@ -13,6 +13,7 @@
 #include <istream>
 #include <ostream>
 #include <utility> // declval
+#include <compare> // std::strong_ordering
 
 #include <boost/config.hpp>
 
@@ -1264,6 +1265,25 @@ typename std::enable_if<
 >::type
 constexpr inline operator!=(const T & lhs, const U & rhs) {
     return ! (lhs == rhs);
+}
+
+// three-way comparison
+
+template<class T, class U> using three_way_comparison_operator
+    = decltype( std::declval<T const&>() <=> std::declval<U const&>() );
+
+template<class T, class U>
+typename std::enable_if<
+    legal_overload<three_way_comparison_operator, T, U>::value,
+    std::strong_ordering
+>::type
+constexpr inline operator<=>(const T & lhs, const U & rhs) {
+    if (lhs == rhs)
+        return std::strong_ordering::equal;
+    if (lhs < rhs)
+        return std::strong_ordering::less;
+
+    return std::strong_ordering::greater;
 }
 
 /////////////////////////////////////////////////////////////////////////

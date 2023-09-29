@@ -13,7 +13,10 @@
 #include <istream>
 #include <ostream>
 #include <utility> // declval
-#include <compare> // std::strong_ordering
+
+#ifdef __cpp_lib_three_way_comparison // requires C++20
+#include <compare>  // std::strong_ordering
+#endif
 
 #include <boost/config.hpp>
 
@@ -1269,6 +1272,8 @@ constexpr inline operator!=(const T & lhs, const U & rhs) {
 
 // three-way comparison
 
+#ifdef __cpp_lib_three_way_comparison
+
 template<class T, class U> using three_way_comparison_operator
     = decltype( std::declval<T const&>() <=> std::declval<U const&>() );
 
@@ -1285,6 +1290,8 @@ constexpr inline operator<=>(const T & lhs, const U & rhs) {
 
     return std::strong_ordering::greater;
 }
+
+#endif
 
 /////////////////////////////////////////////////////////////////////////
 // The following operators only make sense when applied to integet types
